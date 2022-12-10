@@ -11,7 +11,7 @@ const PersonsForm = ({
         name: <input value={newPerson} onChange={handleNewPerson} />
       </div>
       <div>
-        number <input value={newNumber} onChange={handleNewNumber} />
+        number: <input value={newNumber} onChange={handleNewNumber} />
       </div>
       <button>add</button>
     </form>
