@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Notification from "./components/Notification";
 import Filter from "./components/Filter";
-import Persons from "./components/Persons";
+import Numbers from "./components/Numbers";
 import PersonsForm from "./components/PersonsForm";
 import personServices from "./services/persons";
 
@@ -92,6 +92,8 @@ const App = () => {
     if (window.confirm(`Delete ${person.name} ?`)) {
       personServices.remove(id).then(() => {
         setPersons(persons.filter((p) => p.id !== id));
+        setNotification(`${person.name} removed`);
+        notificationTimeout();
       });
     }
   };
@@ -110,7 +112,7 @@ const App = () => {
         handleNewNumber={handleNewNumber}
       />
       <h1>Numbers</h1>
-      <Persons
+      <Numbers
         persons={persons}
         query={query}
         handleDeletePerson={handleDeletePerson}

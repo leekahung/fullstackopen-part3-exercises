@@ -27,7 +27,7 @@ const Notification = ({ notification }) => {
     ...notificationStyles.error,
   };
 
-  return notification === "" ? null : notification.includes("removed") ? (
+  return notification === "" ? null : notification.includes("removed from server") ? (
     <div style={errorStyle}>{notification}</div>
   ) : (
     <div style={notificationStyle}>{notification}</div>
