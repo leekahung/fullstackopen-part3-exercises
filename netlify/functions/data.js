@@ -52,11 +52,18 @@ app.delete("/api/data/:id", (request, response) => {
 app.put("/api/data/:id", (request, response) => {
   const body = request.body;
 
-  Person.findByIdAndUpdate(request.params.id, body, { new: true }).then(
-    (updatedNote) => {
-      response.json(updatedNote);
-    }
-  );
+  Person.findByIdAndUpdate(request.params.id, body, { new: true })
+    .then((updatedNote) => {
+      if (updatedNote) {
+        response.json(updatedNote);
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      response.status(500).end();
+    });
 });
 
 module.exports.handler = serverless(app);
