@@ -8,10 +8,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-morgan.token("body", (request) => JSON.stringify(request.body));
-const middlewareLog = ":method :url :status :res[content-length] - ms :body";
-app.use(morgan(middlewareLog));
-
 app.get("/api/data", (request, response) => {
   Person.find({}).then((persons) => {
     response.json(persons);
@@ -65,5 +61,9 @@ app.put("/api/data/:id", (request, response) => {
       response.status(500).end();
     });
 });
+
+morgan.token("body", (request) => JSON.stringify(request.body));
+const middlewareLog = ":method :url :status :res[content-length] - ms :body";
+app.use(morgan(middlewareLog));
 
 module.exports.handler = serverless(app);
