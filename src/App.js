@@ -18,8 +18,6 @@ const App = () => {
     });
   }, []);
 
-  console.log(persons);
-
   const handleQuery = (event) => {
     setQuery(event.target.value);
   };
