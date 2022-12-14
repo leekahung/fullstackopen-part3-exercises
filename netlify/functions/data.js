@@ -14,10 +14,16 @@ app.get("/api/data", (request, response) => {
   });
 });
 
-app.get("/api/data/:id", (request, response) => {
-  Person.findById(request.params.id).then((person) => {
-    response.json(person);
-  });
+app.get("/api/data/:id", (request, response, next) => {
+  Person.findById(request.params.id)
+    .then((person) => {
+      if (person) {
+        response.json(person);
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch((error) => next(error));
 });
 
 app.post("/api/data", (request, response) => {
@@ -39,13 +45,15 @@ app.post("/api/data", (request, response) => {
   });
 });
 
-app.delete("/api/data/:id", (request, response) => {
-  Person.findByIdAndRemove(request.params.id).then(() => {
-    response.status(204).end();
-  });
+app.delete("/api/data/:id", (request, response, next) => {
+  Person.findByIdAndRemove(request.params.id)
+    .then(() => {
+      response.status(204).end();
+    })
+    .catch((error) => next(error));
 });
 
-app.put("/api/data/:id", (request, response) => {
+app.put("/api/data/:id", (request, response, next) => {
   const body = request.body;
 
   Person.findByIdAndUpdate(request.params.id, body, { new: true })
@@ -57,13 +65,24 @@ app.put("/api/data/:id", (request, response) => {
       }
     })
     .catch((error) => {
-      console.log(error);
-      response.status(500).end();
+      next(error);
     });
 });
 
 morgan.token("body", (request) => JSON.stringify(request.body));
 const middlewareLog = ":method :url :status :res[content-length] - ms :body";
 app.use(morgan(middlewareLog));
+
+const errorHandler = (error, request, response, next) => {
+  console.log(error.message);
+
+  if (error.name === "CastError") {
+    return response.status(400).send({ error: "Malformatted ID or ID does not exist in database" });
+  }
+
+  next(error);
+};
+
+app.use(errorHandler);
 
 module.exports.handler = serverless(app);
