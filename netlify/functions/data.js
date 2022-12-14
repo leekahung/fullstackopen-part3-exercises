@@ -26,12 +26,10 @@ app.get("/api/data/:id", (request, response, next) => {
     .catch((error) => next(error));
 });
 
-app.post("/api/data", (request, response) => {
+app.post("/api/data", (request, response, next) => {
   const body = request.body;
 
-  if (body.name === undefined) {
-    return response.status(404).json({ error: "name missing" });
-  } else if (body.number === undefined) {
+  if (body.number === undefined) {
     return response.status(404).json({ error: "number missing" });
   }
 
@@ -40,9 +38,12 @@ app.post("/api/data", (request, response) => {
     number: body.number,
   });
 
-  person.save().then((savedPerson) => {
-    response.json(savedPerson);
-  });
+  person
+    .save()
+    .then((savedPerson) => {
+      response.json(savedPerson);
+    })
+    .catch((error) => next(error));
 });
 
 app.delete("/api/data/:id", (request, response, next) => {
@@ -56,7 +57,10 @@ app.delete("/api/data/:id", (request, response, next) => {
 app.put("/api/data/:id", (request, response, next) => {
   const body = request.body;
 
-  Person.findByIdAndUpdate(request.params.id, body, { new: true })
+  Person.findByIdAndUpdate(request.params.id, body, {
+    new: true,
+    runValidators: true,
+  })
     .then((updatedNote) => {
       if (updatedNote) {
         response.json(updatedNote);
@@ -77,7 +81,11 @@ const errorHandler = (error, request, response, next) => {
   console.log(error.message);
 
   if (error.name === "CastError") {
-    return response.status(400).send({ error: "Malformatted ID or ID does not exist in database" });
+    return response
+      .status(400)
+      .send({ error: "Malformatted ID or ID does not exist in database" });
+  } else if (error.name === "ValidationError") {
+    return response.status(400).json({ error: error.message });
   }
 
   next(error);

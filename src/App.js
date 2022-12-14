@@ -67,21 +67,33 @@ const App = () => {
             notificationTimeout();
           })
           .catch((error) => {
-            setNotification(
-              `Information of ${newPerson} has already been removed from server`
-            );
-            notificationTimeout();
-            setPersons(persons.filter((n) => n.name !== updatePerson.name));
+            if (error.response.data.error.includes("Validation failed")) {
+              setNotification(error.response.data.error);
+              notificationTimeout();
+            } else {
+              setNotification(
+                `Information of ${newPerson} has already been removed from server`
+              );
+              notificationTimeout();
+              setPersons(persons.filter((n) => n.name !== updatePerson.name));
+            }
           });
       }
     } else {
-      personServices.create(personObject).then((newPersonObject) => {
-        setPersons(persons.concat(newPersonObject));
-        setNewPerson("");
-        setNewNumber("");
-        setNotification(`${newPerson} added`);
-        notificationTimeout();
-      });
+      personServices
+        .create(personObject)
+        .then((newPersonObject) => {
+          setPersons(persons.concat(newPersonObject));
+          setNewPerson("");
+          setNewNumber("");
+          setNotification(`${newPerson} added`);
+          notificationTimeout();
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+          setNotification(error.response.data.error);
+          notificationTimeout();
+        });
     }
   };
 
