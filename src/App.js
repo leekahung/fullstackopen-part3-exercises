@@ -20,6 +20,7 @@ const App = () => {
   const [personInfo, setPersonInfo] = useState(initialPerson);
   const [query, setQuery] = useState("");
   const [notification, setNotification] = useState(initialNotification);
+  const [timeoutID, setTimeoutID] = useState(null);
 
   useEffect(() => {
     numberService.getAll().then((allPersons) => {
@@ -69,10 +70,14 @@ const App = () => {
   };
 
   const runNotification = (message, time, error = false) => {
+    if (timeoutID) {
+      clearTimeout(timeoutID);
+    }
     setNotification({ message, error });
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       setNotification(initialNotification);
     }, time);
+    setTimeoutID(timeout);
   };
 
   const personsFiltered =
