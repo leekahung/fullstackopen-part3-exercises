@@ -1,39 +1,23 @@
 const Notification = ({ notification }) => {
-  const notificationStyles = {
-    general: {
-      backgroundColor: "lightgrey",
-      padding: "10px",
-      fontSize: "20px",
-      marginBottom: "16px",
-      borderRadius: "10px",
-    },
-    notification: {
-      color: "green",
-      border: "3px solid green",
-    },
-    error: {
-      color: "red",
-      border: "3px solid red",
-    },
+  const style = {
+    padding: "10px",
+    margin: "10px 0",
+    backgroundColor: "lightgrey",
+    fontSize: "20px",
+    borderRadius: "10px",
   };
 
-  const notificationStyle = {
-    ...notificationStyles.general,
-    ...notificationStyles.notification,
-  };
-
-  const errorStyle = {
-    ...notificationStyles.general,
-    ...notificationStyles.error,
-  };
-
-  return notification === "" ? null : notification.includes(
-      "removed from server"
-    ) || notification.includes("failed") ? (
-    <div style={errorStyle}>{notification}</div>
-  ) : (
-    <div style={notificationStyle}>{notification}</div>
-  );
+  return notification.message ? (
+    <div
+      style={
+        !notification.error
+          ? { ...style, color: "green", border: "2px solid green" }
+          : { ...style, color: "red", border: "2px solid red" }
+      }
+    >
+      {notification.message}
+    </div>
+  ) : null;
 };
 
 export default Notification;

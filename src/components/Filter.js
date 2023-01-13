@@ -1,11 +1,8 @@
-const Filter = ({query, handleQuery}) => {
+const Filter = ({ query, handleQuery }) => {
   return (
-    <form>
-      <div>
-        filter shown with{" "}
-        <input type="search" value={query} onChange={handleQuery} />
-      </div>
-    </form>
+    <div>
+      filter <input value={query} onChange={handleQuery} />
+    </div>
   );
 };
 
