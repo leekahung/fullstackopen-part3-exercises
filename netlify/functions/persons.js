@@ -11,56 +11,24 @@ const middlewareLogger = morgan(
 );
 app.use(middlewareLogger);
 
-let persons = [
-  {
-    id: 1,
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: 2,
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: 3,
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: 4,
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-];
+const Person = require("./models/person");
 
 app.get("/api/persons", (_request, response) => {
-  response.json(persons);
+  Person.find({}).then((persons) => {
+    response.json(persons);
+  });
 });
 
 app.get("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const person = persons.find((p) => p.id === id);
-  if (!person) {
-    return response.status(404).json({
-      error: "User not found",
-    });
-  }
-
-  response.json(person);
+  Person.findById(request.params.id).then((person) => {
+    response.json(person);
+  });
 });
 
 app.delete("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const personToDelete = persons.find((p) => p.id === id);
-  if (personToDelete) {
-    persons = persons.filter((p) => p.id !== id);
+  Person.findByIdAndRemove(request.params.id).then((result) => {
     response.status(204).end();
-  } else {
-    response.status(404).json({
-      error: "User not found",
-    });
-  }
+  });
 });
 
 const generateId = () => {
@@ -69,10 +37,10 @@ const generateId = () => {
 
 app.post("/api/persons", (request, response) => {
   const body = request.body;
-  const newPerson = {
+  const newPerson = new Person({
     ...body,
     id: generateId(),
-  };
+  });
 
   if (!newPerson.name) {
     return response.status(400).json({
@@ -82,22 +50,21 @@ app.post("/api/persons", (request, response) => {
     return response.status(400).json({
       error: "Person's number is missing",
     });
-  } else if (persons.map((p) => p.name).includes(newPerson.name)) {
-    return response.status(400).json({
-      error: "name must be unique",
-    });
   }
 
-  persons = persons.concat(newPerson);
-  response.json(newPerson);
+  newPerson.save().then((savedPerson) => {
+    response.json(savedPerson);
+  });
 });
 
 app.get("/info", (_request, response) => {
-  response.send(`
-    <div>Phonebook has info for ${persons.length} people</div>
-    <br>
-    <div>${new Date()}</div>
-  `);
+  Person.find({}).then((allPersons) => {
+    response.send(`
+      <div>Phonebook has info for ${allPersons.length} people</div>
+      <br>
+      <div>${new Date()}</div>
+    `);
+  });
 });
 
 const serverless = require("serverless-http");
