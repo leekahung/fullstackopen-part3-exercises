@@ -14,6 +14,10 @@ const errorHandler = (error, _request, response, next) => {
     return response.status(400).send({
       error: "malformatted id",
     });
+  } else if (error.name === "ValidationError") {
+    return response.status(400).send({
+      error: `Invalid number: ${error.message}`,
+    });
   }
 
   next(error);

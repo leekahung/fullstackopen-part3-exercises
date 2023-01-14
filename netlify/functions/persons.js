@@ -41,26 +41,28 @@ app.delete("/api/persons/:id", (request, response, next) => {
     .catch((error) => next(error));
 });
 
-const generateId = () => {
-  return Number((Math.random() * 1000000).toFixed(0));
-};
-
 app.post("/api/persons", (request, response, next) => {
   const body = request.body;
-  const newPerson = new Person({
-    ...body,
-    id: generateId(),
-  });
+  Person.findOne({ name: body.name }).then((person) => {
+    if (person) {
+      response.status(400).send({
+        error: `${body.name} already exist in phonebook`,
+      });
+    } else {
+      const newPerson = new Person(body);
 
-  newPerson
-    .save()
-    .then((savedPerson) => {
-      response.json(savedPerson);
-    })
-    .catch((error) => next(error));
+      newPerson
+        .save()
+        .then((savedPerson) => {
+          response.json(savedPerson);
+        })
+        .catch((error) => next(error));
+    }
+  });
 });
 
-app.put("/api/persons/:id", (request, response, next) => {
+// Unused in 3-20 which ask to respond with error instead of ask for update
+/* app.put("/api/persons/:id", (request, response, next) => {
   const body = request.body;
 
   const personToUpdate = {
@@ -68,12 +70,15 @@ app.put("/api/persons/:id", (request, response, next) => {
     number: body.number,
   };
 
-  Person.findByIdAndUpdate(request.params.id, personToUpdate, { new: true })
+  Person.findByIdAndUpdate(request.params.id, personToUpdate, {
+    new: true,
+    runValidators: true,
+  })
     .then((updatedPerson) => {
       response.json(updatedPerson);
     })
     .catch((error) => next(error));
-});
+}); */
 
 app.use(errorHandler);
 

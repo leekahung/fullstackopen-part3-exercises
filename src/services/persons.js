@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const baseUrl = "/api/persons";
+const baseUrl = "http://localhost:8888/api/persons";
+// const baseUrl = "/api/persons" <-- correct path to API resources when hosting on Netlify
 
 const getAll = () => {
   const request = axios.get(baseUrl);

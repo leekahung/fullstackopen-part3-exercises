@@ -41,7 +41,19 @@ const App = () => {
 
   const handleAddPerson = (event) => {
     event.preventDefault();
-    if (persons.map((p) => p.name).includes(personInfo.name)) {
+    // Exercise 3-20
+    numberService
+      .createNew(personInfo)
+      .then((newPerson) => {
+        setPersons(persons.concat(newPerson));
+        runNotification(`Added ${newPerson.name} to phonebook`, 5000);
+        setPersonInfo(initialPerson);
+      })
+      .catch((error) => {
+        runNotification(error.response.data.error, 5000, true);
+      });
+    // Exercise 2-18 to Exercise 3.19
+    /* if (persons.map((p) => p.name).includes(personInfo.name)) {
       const personToUpdate = persons.find((p) => p.name === personInfo.name);
       if (
         window.confirm(
@@ -56,15 +68,23 @@ const App = () => {
                 p.name === personInfo.name ? updatedPerson : p
               )
             );
+          })
+          .catch((error) => {
+            runNotification(error.response.data.error, 5000, true);
           });
       }
     } else {
-      numberService.createNew(personInfo).then((newPerson) => {
-        setPersons(persons.concat(newPerson));
-        runNotification(`Added ${newPerson.name} to phonebook`, 5000);
-        setPersonInfo(initialPerson);
-      });
-    }
+      numberService
+        .createNew(personInfo)
+        .then((newPerson) => {
+          setPersons(persons.concat(newPerson));
+          runNotification(`Added ${newPerson.name} to phonebook`, 5000);
+          setPersonInfo(initialPerson);
+        })
+        .catch((error) => {
+          runNotification(error.response.data.error, 5000, true);
+        });
+    } */
   };
 
   const handleDeletePerson = (person) => {
