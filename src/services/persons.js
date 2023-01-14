@@ -12,9 +12,8 @@ const createNew = (personObject) => {
   return request.then((response) => response.data);
 };
 
-const updateObject = (personObject) => {
-  const id = personObject.id;
-  const request = axios.post(`${baseUrl}/${id}`, personObject);
+const updateObject = (personObject, id) => {
+  const request = axios.put(`${baseUrl}/${id}`, personObject);
   return request.then((response) => response.data);
 };
 

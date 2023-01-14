@@ -41,11 +41,30 @@ const App = () => {
 
   const handleAddPerson = (event) => {
     event.preventDefault();
-    numberService.createNew(personInfo).then((newPerson) => {
-      setPersons(persons.concat(newPerson));
-      runNotification(`Added ${newPerson.name} to phonebook`, 5000);
-      setPersonInfo(initialPerson);
-    });
+    if (persons.map((p) => p.name).includes(personInfo.name)) {
+      const personToUpdate = persons.find((p) => p.name === personInfo.name);
+      if (
+        window.confirm(
+          `${personInfo.name} is already in Phonebook. Would you like to replace the number?`
+        )
+      ) {
+        numberService
+          .updateObject(personInfo, personToUpdate.id)
+          .then((updatedPerson) => {
+            setPersons(
+              persons.map((p) =>
+                p.name === personInfo.name ? updatedPerson : p
+              )
+            );
+          });
+      }
+    } else {
+      numberService.createNew(personInfo).then((newPerson) => {
+        setPersons(persons.concat(newPerson));
+        runNotification(`Added ${newPerson.name} to phonebook`, 5000);
+        setPersonInfo(initialPerson);
+      });
+    }
   };
 
   const handleDeletePerson = (person) => {
